@@ -1,0 +1,23 @@
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# 上传目录（不进入镜像）
+uploads/
+
+# 本地日志
+logs/
+*.log
+
+# 测试产物
+test-output/
+
+# Git
+.git/
+.gitignore

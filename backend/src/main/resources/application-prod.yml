@@ -1,0 +1,62 @@
+# 生产（Docker Compose）环境配置
+# 所有连接参数均由环境变量注入，容器编排见根目录 docker-compose.yml
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:mysql}:${DB_PORT:3306}/${DB_NAME:daylog}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:daylog123456}
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      database: 0
+      timeout: 5s
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    # 生产环境不打印 SQL
+  global-config:
+    banner: false
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 生产环境关闭 Swagger 文档入口（仅开发联调时开启）
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+daylog:
+  jwt:
+    # 生产务必通过环境变量 DAYLOG_JWT_SECRET 注入强随机密钥
+    secret: ${DAYLOG_JWT_SECRET:daylog-docker-default-secret-change-me-please-use-a-random-string-of-at-least-256-bits}
+    # 7 天 = 10080 分钟
+    expire-minutes: 10080
+  ai:
+    deepseek:
+      base-url: https://api.deepseek.com
+      api-key: ${DEEPSEEK_API_KEY:}
+      model: deepseek-chat
+      timeout-seconds: 60
+  upload:
+    # 容器内绝对路径，由 docker-compose 挂载命名卷持久化
+    dir: ${UPLOAD_DIR:/app/uploads}
+    allowed-extensions: jpg,jpeg,png,gif,webp
+
+logging:
+  level:
+    com.daylog: info

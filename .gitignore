@@ -1,0 +1,58 @@
+# ============================================================
+# Daylog 仓库收录规则
+#
+# 本目录同时是本地开发沙箱：除对外交付的代码外，还放着学习重写版
+# （AA/）、移动端 H5 版（new_frontend/）、本地 Maven 仓库、浏览器
+# 自动化截图与各类临时产物。
+# 因此采用「默认全部忽略 + 显式放行」的白名单写法，
+# 保证 git add . 不会把沙箱里的私人内容带进公开仓库。
+# ============================================================
+
+# ---- 默认忽略根目录下的一切（含 .env、AA/、new_frontend/、tmp/ 等）----
+/*
+
+# ---- 显式放行：对外交付内容 ----
+!/.gitignore
+!/.gitattributes
+!/.env.example
+!/README.md
+!/docker-compose.yml
+!/backend/
+!/frontend/
+!/docs/
+!/learn/
+
+# ---- 环境变量（含密钥，禁止提交）----
+.env
+.env.*
+!.env.example
+
+# ---- Java / Maven ----
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# ---- Node / Vite ----
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# ---- 运行时产物 ----
+uploads/
+logs/
+*.log
+
+# ---- 测试报告 ----
+test-output/
+coverage/
+
+# ---- IDE / 系统 ----
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+Thumbs.db

@@ -1,0 +1,58 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/daylog?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: change-me
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 5s
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    banner: false
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+daylog:
+  jwt:
+    # 生产环境务必通过环境变量注入，不要提交真实密钥
+    secret: ${DAYLOG_JWT_SECRET:daylog-dev-secret-key-change-me-please-use-a-random-string-of-at-least-256-bits}
+    # 7 天 = 10080 分钟，与接口文档约定一致
+    expire-minutes: 10080
+  ai:
+    deepseek:
+      base-url: https://api.deepseek.com
+      api-key: ${DEEPSEEK_API_KEY:sk-xxx}
+      model: deepseek-chat
+      timeout-seconds: 60
+  upload:
+    dir: ./uploads
+    allowed-extensions: jpg,jpeg,png,gif,webp
+
+logging:
+  level:
+    com.daylog: debug

@@ -1,0 +1,206 @@
+/* ============ Daylog 简约风设计 token ============ */
+:root {
+  /* Element Plus 主色重写为墨黑，全站控件统一低饱和 */
+  --el-color-primary: #1f1f1f;
+  --el-color-primary-light-3: #52525b;
+  --el-color-primary-light-5: #7d7d85;
+  --el-color-primary-light-7: #b1b1b7;
+  --el-color-primary-light-8: #cbcbcf;
+  --el-color-primary-light-9: #e9e9eb;
+  --el-color-primary-dark-2: #0a0a0a;
+  --el-border-radius-base: 6px;
+
+  /* 站内通用色 */
+  --bg-page: #fafafa;
+  --bg-card: #ffffff;
+  --border-hairline: #ebebeb;
+  --text-main: #18181b;
+  --text-sub: #71717a;
+  --text-faint: #a8a8a8;
+}
+
+/* 暗色模式 */
+[data-theme="dark"] {
+  --el-color-primary: #e4e4e7;
+  --el-color-primary-light-3: #a1a1aa;
+  --el-color-primary-light-5: #71717a;
+  --el-color-primary-light-7: #52525b;
+  --el-color-primary-light-8: #3f3f46;
+  --el-color-primary-light-9: #27272a;
+  --el-color-primary-dark-2: #fafafa;
+
+  --bg-page: #0a0a0a;
+  --bg-card: #18181b;
+  --border-hairline: #27272a;
+  --text-main: #e4e4e7;
+  --text-sub: #a1a1aa;
+  --text-faint: #71717a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--text-main);
+  background: var(--bg-page);
+}
+
+/* 细滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 卡片：去阴影、hairline 边框、hover 只加深边框 */
+.el-card {
+  border: 1px solid var(--border-hairline);
+  box-shadow: none !important;
+  border-radius: 10px;
+  transition: border-color 0.2s;
+}
+
+.el-card:hover {
+  border-color: #d4d4d8;
+}
+
+.el-card__header {
+  border-bottom: 1px solid var(--border-hairline);
+  font-weight: 600;
+}
+
+/* 按钮：主按钮黑底白字（继承主色），圆角稍大 */
+.el-button {
+  font-weight: 500;
+}
+
+/* 输入控件统一 hairline */
+.el-input__wrapper,
+.el-select__wrapper,
+.el-textarea__inner {
+  border-radius: 6px;
+}
+
+/* 暗色模式组件适配 */
+[data-theme="dark"] .el-card {
+  background: var(--bg-card);
+  border-color: var(--border-hairline);
+}
+
+[data-theme="dark"] .el-card:hover {
+  border-color: #3f3f46;
+}
+
+[data-theme="dark"] .el-card__header {
+  border-bottom-color: var(--border-hairline);
+}
+
+[data-theme="dark"] .el-input__wrapper,
+[data-theme="dark"] .el-select__wrapper,
+[data-theme="dark"] .el-textarea__inner {
+  background: #27272a;
+  box-shadow: 0 0 0 1px var(--border-hairline) inset;
+}
+
+[data-theme="dark"] .el-input__inner,
+[data-theme="dark"] .el-textarea__inner {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .el-menu {
+  background: var(--bg-card);
+  border-right: none;
+}
+
+[data-theme="dark"] .el-menu-item {
+  color: var(--text-sub);
+}
+
+[data-theme="dark"] .el-menu-item:hover,
+[data-theme="dark"] .el-menu-item.is-active {
+  background: #27272a;
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .el-table {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .el-table th.el-table__cell {
+  background: #27272a;
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .el-table tr {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: #1f1f23;
+}
+
+[data-theme="dark"] .el-table td.el-table__cell,
+[data-theme="dark"] .el-table th.el-table__cell.is-leaf {
+  border-bottom-color: var(--border-hairline);
+}
+
+[data-theme="dark"] .el-pagination button,
+[data-theme="dark"] .el-pagination .el-pager li {
+  background: #27272a;
+  color: var(--text-sub);
+}
+
+[data-theme="dark"] .el-pagination .el-pager li.is-active {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .el-dialog {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .el-drawer {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .el-tag {
+  border-color: var(--border-hairline);
+}
+
+[data-theme="dark"] .el-empty__description p {
+  color: var(--text-sub);
+}
+
+[data-theme="dark"] .el-date-picker {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .el-dropdown-menu {
+  background: var(--bg-card);
+  border-color: var(--border-hairline);
+}
+
+[data-theme="dark"] .el-dropdown-menu__item {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .el-dropdown-menu__item:hover {
+  background: #27272a;
+}
