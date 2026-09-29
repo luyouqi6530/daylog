@@ -29,7 +29,7 @@ export default defineConfig({
     proxy: {
       // 前端所有 /api 请求代理到后端，规避跨域
       '/api': {
-        target: 'http://localhost:18080',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }
