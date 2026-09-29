@@ -52,6 +52,12 @@ daylog:
   upload:
     dir: ./uploads
     allowed-extensions: jpg,jpeg,png,gif,webp
+  # 登录/注册限流（本地调试比生产宽松，免得反复试登录把自己锁掉）
+  rate-limit:
+    login-window-seconds: 60
+    login-max-attempts: 30
+    register-window-seconds: 3600
+    register-max-attempts: 20
 
 logging:
   level:

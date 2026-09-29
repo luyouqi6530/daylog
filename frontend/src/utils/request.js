@@ -37,6 +37,9 @@ service.interceptors.response.use(
       userStore.logout()
       router.push('/login')
       ElMessage.error('登录已过期，请重新登录')
+    } else if (error.response && error.response.status === 429) {
+      // 限流命中：展示后端 Result 里的中文提示，而不是 axios 的英文状态码文案
+      ElMessage.error(error.response.data?.message || '操作过于频繁，请稍后再试')
     } else {
       ElMessage.error(error.message || '网络异常，请稍后重试')
     }

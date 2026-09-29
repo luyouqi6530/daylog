@@ -2,12 +2,14 @@ package com.daylog.modules.auth.controller;
 
 import com.daylog.common.exception.BusinessException;
 import com.daylog.common.result.ResultCode;
+import com.daylog.config.RateLimitProperties;
 import com.daylog.modules.auth.dto.LoginDTO;
 import com.daylog.modules.auth.dto.RegisterDTO;
 import com.daylog.modules.auth.service.AuthService;
 import com.daylog.modules.auth.vo.LoginVO;
 import com.daylog.modules.auth.vo.UserVO;
 import com.daylog.security.JwtAuthenticationFilter;
+import com.daylog.security.RateLimitService;
 import com.daylog.security.TokenBlacklistService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -67,6 +69,18 @@ class AuthControllerTest {
 
     @MockBean
     private AuthService authService;
+
+    /**
+     * @WebMvcTest 会把 WebMvcConfigurer（即 WebMvcConfig）拉进切片，而它现在构造依赖
+     * 限流的两个 bean；切片不加载 Redis 自动配置，所以这里 mock 掉。
+     * 注意 MockMvc 仍会执行 MVC 拦截器（addFilters=false 只关 Servlet 过滤器），
+     * mock 的计数默认返回 0 → 永远不触发限流，登录/注册用例照常通过。
+     */
+    @MockBean
+    private RateLimitService rateLimitService;
+
+    @MockBean
+    private RateLimitProperties rateLimitProperties;
 
     // ====================== login ======================
 

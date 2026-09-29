@@ -29,7 +29,10 @@ public enum ResultCode {
     FILE_UPLOAD_FAILED(3002, "文件保存失败"),
     FILE_NOT_FOUND(3003, "文件不存在"),
     AI_GENERATE_FAILED(3004, "AI 生成失败，请稍后重试"),
-    AI_NO_DIARY_THIS_WEEK(3005, "该周没有日记，无法生成周报");
+    AI_NO_DIARY_THIS_WEEK(3005, "该周没有日记，无法生成周报"),
+
+    // ---------- 业务错误码 4xxx：流量控制 ----------
+    TOO_MANY_REQUESTS(4001, "操作过于频繁，请稍后再试");
 
     private final int code;
     private final String message;

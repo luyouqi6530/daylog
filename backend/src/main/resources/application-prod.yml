@@ -42,8 +42,10 @@ springdoc:
 
 daylog:
   jwt:
-    # 生产务必通过环境变量 DAYLOG_JWT_SECRET 注入强随机密钥
-    secret: ${DAYLOG_JWT_SECRET:daylog-docker-default-secret-change-me-please-use-a-random-string-of-at-least-256-bits}
+    # 无默认值：没注入就启动失败。本仓库是公开的，把默认密钥写进源码等于公开签名私钥——
+    # 任何人都能拿它伪造任意用户的 token，而且运行期完全无感。
+    # 部署链上 docker-compose.yml 已用 ${DAYLOG_JWT_SECRET:?...} 强制要求 .env 提供
+    secret: ${DAYLOG_JWT_SECRET}
     # 7 天 = 10080 分钟
     expire-minutes: 10080
   ai:
@@ -56,6 +58,12 @@ daylog:
     # 容器内绝对路径，由 docker-compose 挂载命名卷持久化
     dir: ${UPLOAD_DIR:/app/uploads}
     allowed-extensions: jpg,jpeg,png,gif,webp
+  # 登录/注册限流（按客户端 IP 计数，Redis 固定窗口）
+  rate-limit:
+    login-window-seconds: 60
+    login-max-attempts: 10
+    register-window-seconds: 3600
+    register-max-attempts: 5
 
 logging:
   level:
