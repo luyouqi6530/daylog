@@ -6,8 +6,11 @@ WORKDIR /app
 RUN npm config set registry https://registry.npmmirror.com
 
 # 先装依赖（利用 Docker 分层缓存）
+# --legacy-peer-deps：lockfile 里 vue-router@5.3.1 的 peerOptional 要 vite@^7.3.0，
+# 锁定的却是 vite@6.4.3（@vitejs/plugin-vue@5 只吃 ^5||^6，升不动）。
+# npm ci 装什么完全由 lockfile 决定，这个开关只关掉 peer 区间校验。
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 # 拷贝源码构建
 COPY . .

@@ -101,6 +101,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <!-- awaitility 上游缺陷: pom 声明了未发布到中央仓库的内部模块 awaitility-test-support,
+                     不排除会导致依赖解析失败(Maven Central / 阿里云均 404) -->
+                <exclusion>
+                    <groupId>org.awaitility</groupId>
+                    <artifactId>awaitility-test-support</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
