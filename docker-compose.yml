@@ -9,6 +9,10 @@
 #
 # 宿主机端口均已避开本地开发默认端口（3306/6379/8080），
 # 与本机 IDEA + localhost 联调环境互不冲突，可同时运行。
+#
+# mysql / redis / backend 的映射一律只绑 127.0.0.1：对公网开放的只有 nginx，
+# 数据库和 Redis 不存在任何对外入口。远程连库请走 SSH 隧道：
+#   ssh -L 13306:127.0.0.1:13306 root@服务器IP
 # ============================================================
 
 name: daylog
@@ -32,7 +36,7 @@ services:
       # 首次启动自动建库建表（schema.sql 含 CREATE DATABASE + USE，幂等）
       - ./backend/sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     ports:
-      - "${MYSQL_PORT:-13306}:3306"   # 避开本机 3306
+      - "127.0.0.1:${MYSQL_PORT:-13306}:3306"   # 只绑回环，公网不可达
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-daylog123456}"]
       interval: 10s
@@ -44,12 +48,13 @@ services:
   redis:
     image: redis:7-alpine
     container_name: daylog-redis
-    restart: unless-stopped
+    # always：Docker Desktop / 服务器重启后自动拉起，免手动 start
+    restart: always
     command: redis-server --appendonly yes
     volumes:
       - redis-data:/data
     ports:
-      - "${REDIS_PORT:-16379}:6379"   # 避开本机 6379
+      - "127.0.0.1:${REDIS_PORT:-16379}:6379"   # 只绑回环，公网不可达
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -72,8 +77,9 @@ services:
       DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-daylog123456}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      # 生产密钥：务必在 .env 中覆盖默认值！
-      DAYLOG_JWT_SECRET: ${DAYLOG_JWT_SECRET:-daylog-docker-default-secret-change-me-please-use-a-random-string-of-at-least-256-bits}
+      # 生产密钥：无默认值。本仓库是公开的，写死默认密钥等于公开签名私钥——
+      # 任何人都能用它伪造任意用户 token。不设 .env 时 compose 直接拒绝启动。
+      DAYLOG_JWT_SECRET: ${DAYLOG_JWT_SECRET:?请在 .env 中设置 DAYLOG_JWT_SECRET（openssl rand -base64 64）}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
       TZ: Asia/Shanghai
     depends_on:
@@ -84,7 +90,7 @@ services:
     volumes:
       - uploads:/app/uploads
     ports:
-      - "${BACKEND_PORT:-18080}:8080"   # 暴露给宿主机，便于直连调试 API
+      - "127.0.0.1:${BACKEND_PORT:-18080}:8080"   # 只绑回环；对外一律走 nginx，不给绕过网关的入口
     # 限制内存便于演示 JVM -XX:MaxRAMPercentage 适配容器
     mem_limit: 1024m
 
