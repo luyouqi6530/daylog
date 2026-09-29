@@ -26,6 +26,10 @@
 .env
 .env.*
 !.env.example
+# 前端这两个只含构建期公开路径 VITE_API_BASE_URL=/api，没有密钥；
+# 缺了它们，裸 clone 构建出的前端 baseURL 为空、所有请求被 nginx 判 405。
+!frontend/.env.development
+!frontend/.env.production
 
 # ---- Java / Maven ----
 target/
