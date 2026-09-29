@@ -74,8 +74,8 @@ class StatsServiceImplTest {
         cached.setCurrentStreak(7);
         cached.setLongestStreak(30);
 
-        when(cacheService.buildKey(eq("overview"), eq(1L))).thenReturn("stats:overview:1");
-        when(cacheService.get("stats:overview:1"))
+        when(cacheService.buildKey(eq("overview"), eq(1L))).thenReturn("stats:1:overview");
+        when(cacheService.get("stats:1:overview"))
                 .thenReturn(objectMapper.writeValueAsString(cached));
 
         StatsOverviewVO result = statsService.overview(1L);
@@ -88,8 +88,8 @@ class StatsServiceImplTest {
     @Test
     @DisplayName("overview：缓存 miss 时查 DB + 回填 Redis（TTL 5min）")
     void overview_cacheMiss_queriesDbAndWritesCache() {
-        when(cacheService.buildKey("overview", 1L)).thenReturn("stats:overview:1");
-        when(cacheService.get("stats:overview:1")).thenReturn(null);
+        when(cacheService.buildKey("overview", 1L)).thenReturn("stats:1:overview");
+        when(cacheService.get("stats:1:overview")).thenReturn(null);
         when(diaryMapper.selectCount(any())).thenReturn(10L);
         when(statsMapper.selectTotalWords(1L)).thenReturn(5000L);
         when(statsMapper.selectRecordDates(1L)).thenReturn(List.of(LocalDate.now()));
@@ -98,7 +98,7 @@ class StatsServiceImplTest {
 
         assertThat(result.getTotalDiaries()).isEqualTo(10);
         assertThat(result.getTotalWords()).isEqualTo(5000L);
-        verify(cacheService).set(eq("stats:overview:1"), anyString(), eq(5L * 60));
+        verify(cacheService).set(eq("stats:1:overview"), anyString(), eq(5L * 60));
     }
 
     // ====================== moodTrend 范围保护 ======================
@@ -110,7 +110,7 @@ class StatsServiceImplTest {
         LocalDate tooEarly = today.minusDays(200); // 超出 92 天
 
         when(cacheService.buildKey(anyString(), anyLong(), any(), any()))
-                .thenReturn("stats:mood-trend:1:date_date");
+                .thenReturn("stats:1:mood-trend:date:date");
 
         statsService.moodTrend(1L, tooEarly, today);
 
@@ -123,7 +123,7 @@ class StatsServiceImplTest {
     @DisplayName("moodTrend：传入 null 时默认查询最近 30 天")
     void moodTrend_nullRange_usesLast30Days() {
         when(cacheService.buildKey(anyString(), anyLong(), any(), any()))
-                .thenReturn("stats:mood-trend:1:date_date");
+                .thenReturn("stats:1:mood-trend:date:date");
 
         statsService.moodTrend(1L, null, null);
 
@@ -135,7 +135,7 @@ class StatsServiceImplTest {
     @Test
     @DisplayName("tagCloud：limit < 1 时被 clamp 到 1")
     void tagCloud_limitTooSmall_clampsToOne() {
-        when(cacheService.buildKey(anyString(), anyLong(), any())).thenReturn("stats:tag-cloud:1:1");
+        when(cacheService.buildKey(anyString(), anyLong(), any())).thenReturn("stats:1:tag-cloud:1");
 
         statsService.tagCloud(1L, 0);
         statsService.tagCloud(1L, -10);
@@ -146,7 +146,7 @@ class StatsServiceImplTest {
     @Test
     @DisplayName("tagCloud：limit > 50 时被 clamp 到 50")
     void tagCloud_limitTooLarge_clampsToFifty() {
-        when(cacheService.buildKey(anyString(), anyLong(), any())).thenReturn("stats:tag-cloud:1:50");
+        when(cacheService.buildKey(anyString(), anyLong(), any())).thenReturn("stats:1:tag-cloud:50");
 
         statsService.tagCloud(1L, 100);
         statsService.tagCloud(1L, 9999);
@@ -159,8 +159,8 @@ class StatsServiceImplTest {
     @Test
     @DisplayName("overview：缓存 JSON 解析失败视为未命中（不影响业务）")
     void overview_corruptCacheJson_fallsBackToDb() {
-        when(cacheService.buildKey("overview", 1L)).thenReturn("stats:overview:1");
-        when(cacheService.get("stats:overview:1")).thenReturn("{this is not valid json}");
+        when(cacheService.buildKey("overview", 1L)).thenReturn("stats:1:overview");
+        when(cacheService.get("stats:1:overview")).thenReturn("{this is not valid json}");
         when(diaryMapper.selectCount(any())).thenReturn(5L);
         when(statsMapper.selectTotalWords(1L)).thenReturn(1000L);
         when(statsMapper.selectRecordDates(1L)).thenReturn(List.of());

@@ -45,17 +45,21 @@ public class StatsCacheService {
      * 生产大键空间应改用 SCAN 渐进遍历，避免阻塞 Redis。</p>
      */
     public void evictByUser(Long userId) {
-        Set<String> keys = redisTemplate.keys(KEY_PREFIX + "*:" + userId);
+        Set<String> keys = redisTemplate.keys(KEY_PREFIX + userId + ":*");
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.delete(keys);
         }
     }
 
     /**
-     * 构造缓存 key，如 stats:overview:123、stats:mood-trend:123:2026-09-01_2026-09-07
+     * 构造缓存 key，如 stats:123:overview、stats:123:mood-trend:2026-09-01:2026-09-07
+     *
+     * <p>userId 必须紧跟 {@code stats:} 前缀：evictByUser 靠 {@code stats:{userId}:*}
+     * 整键匹配来失效，参数后缀排在 userId 之后才删得掉。换成 name 在前会让带参数的
+     * 四类（mood-trend / mood-distribution / tag-cloud / heatmap）永远漏删。</p>
      */
     public String buildKey(String name, Long userId, Object... params) {
-        StringBuilder key = new StringBuilder(KEY_PREFIX).append(name).append(':').append(userId);
+        StringBuilder key = new StringBuilder(KEY_PREFIX).append(userId).append(':').append(name);
         for (Object param : params) {
             key.append(':').append(param);
         }
