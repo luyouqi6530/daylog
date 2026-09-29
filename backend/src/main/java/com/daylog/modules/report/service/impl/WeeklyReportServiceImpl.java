@@ -78,7 +78,9 @@ public class WeeklyReportServiceImpl implements WeeklyReportService {
                 modelTag = "deepseek-agent";
                 log.info("[周报 Agent] 用户={} 周起={} 生成成功", userId, weekStart);
             } catch (BusinessException be) {
-                if (be.getCode() == ResultCode.AI_NO_DIARY_THIS_WEEK.getCode()) {
+                // 注意：Agent 侧的"不足 3 篇"用的是 AI_INSUFFICIENT_DIARY，不是本方法第 62 行的 3005；
+                // 漏进这个判断就会被静默降级成 Mock 统计，用户看不到真实原因
+                if (be.getCode() == ResultCode.AI_INSUFFICIENT_DIARY.getCode()) {
                     throw be; // 业务错"日志不足"必须告知前端，不降级
                 }
                 log.error("[周报 Agent] 调用失败，降级到 Mock: {}", be.getMessage());

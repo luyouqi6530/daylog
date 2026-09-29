@@ -74,7 +74,7 @@ class ResultTest {
     }
 
     @Test
-    @DisplayName("ResultCode 关键枚举值稳定：业务错码 1001/1002/1003/1004/3004/3005 不可漂移")
+    @DisplayName("ResultCode 关键枚举值稳定：业务错码 1001/1002/1003/1004/3004/3005/3006 不可漂移")
     void resultCode_constantsStable() {
         // 防止有人误改枚举值导致前端联动失效
         assertThat(ResultCode.SUCCESS.getCode()).isEqualTo(200);
@@ -86,5 +86,6 @@ class ResultTest {
         assertThat(ResultCode.USERNAME_OR_PASSWORD_ERROR.getCode()).isEqualTo(1004);
         assertThat(ResultCode.AI_GENERATE_FAILED.getCode()).isEqualTo(3004);
         assertThat(ResultCode.AI_NO_DIARY_THIS_WEEK.getCode()).isEqualTo(3005);
+        assertThat(ResultCode.AI_INSUFFICIENT_DIARY.getCode()).isEqualTo(3006);
     }
 }

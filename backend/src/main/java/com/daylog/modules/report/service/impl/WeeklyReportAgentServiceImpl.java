@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
  * <ul>
  *   <li>调用超步 → 抛出 AI_GENERATE_FAILED，让上层记录到日志并继续</li>
  *   <li>AgentTools 抛出 {@link AgentTools#EXCEPTION_INSUFFICIENT} → 直接抛出，
- *       上层映射为 AI_NO_DIARY_THIS_WEEK 业务错误</li>
+ *       上层映射为 AI_INSUFFICIENT_DIARY 业务错误</li>
  * </ul>
  */
 @Slf4j
@@ -142,7 +142,7 @@ public class WeeklyReportAgentServiceImpl implements WeeklyReportAgentService {
                     String msg = e.getMessage() == null ? e.toString() : e.getMessage();
                     if (msg.startsWith(AgentTools.EXCEPTION_INSUFFICIENT)) {
                         log.info("[Agent] 用户={} 本周日记不足，终止: {}", userId, msg);
-                        throw new BusinessException(ResultCode.AI_NO_DIARY_THIS_WEEK);
+                        throw new BusinessException(ResultCode.AI_INSUFFICIENT_DIARY);
                     }
                     log.warn("[Agent] 工具 {} 执行失败: {}", call.name(), msg);
                     // 把错误作为 tool result 回给 LLM，让它能看到失败、有机会改策略

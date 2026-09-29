@@ -155,7 +155,7 @@ class WeeklyReportServiceImplTest {
     }
 
     @Test
-    @DisplayName("generate：Agent 抛 AI_NO_DIARY_THIS_WEEK → 业务异常继续上抛（不降级 mock）")
+    @DisplayName("generate：Agent 抛 AI_INSUFFICIENT_DIARY → 业务异常继续上抛（不降级 mock）")
     void generate_agentThrowsInsufficientDiary_propagates() {
         when(deepSeekProperties.getApiKey()).thenReturn("sk-key");
         GenerateReportDTO dto = new GenerateReportDTO();
@@ -164,12 +164,12 @@ class WeeklyReportServiceImplTest {
         // 此处模拟 Agent 自己抛业务异常
         when(diaryMapper.selectList(any(LambdaQueryWrapper.class))).thenReturn(buildDiaries());
         when(agentService.generateReport(eq(1L), any(LocalDate.class)))
-                .thenThrow(new BusinessException(ResultCode.AI_NO_DIARY_THIS_WEEK));
+                .thenThrow(new BusinessException(ResultCode.AI_INSUFFICIENT_DIARY));
 
         assertThatThrownBy(() -> reportService.generate(1L, dto))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> assertThat(((BusinessException) ex).getCode())
-                        .isEqualTo(ResultCode.AI_NO_DIARY_THIS_WEEK.getCode()));
+                        .isEqualTo(ResultCode.AI_INSUFFICIENT_DIARY.getCode()));
 
         verify(weeklyReportMapper, never()).insert(any(WeeklyReport.class));
         verify(weeklyReportMapper, never()).updateById(any(WeeklyReport.class));
